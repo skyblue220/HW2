@@ -1,0 +1,22 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+    - name: Pull latest Docker image
+      run: docker pull ${{ secrets.DOCKER_USERNAME }}/simple-web-service:latest
+
+    - name: Stop existing container
+      run: docker stop devops-app || true
+
+    - name: Remove old container
+      run: docker rm devops-app || true
+
+    - name: Run new container
+      run: docker run -d --name devops-app -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/simple-web-service:latest

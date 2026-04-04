@@ -1,0 +1,27 @@
+[
+  {
+    "id": 1,
+    "title": "Welcome to the Blog",
+    "content": "This is the first post in our simple blog.",
+    "author": "글쓴이",
+    "comments": []
+  },
+  {
+    "id": 1775286769001,
+    "title": "HIHIHHI",
+    "content": "HI!",
+    "author": "글쓴이",
+    "comments": [
+      {
+        "ip": "::1",
+        "name": "익명1",
+        "content": "Hello!"
+      },
+      {
+        "ip": "::1",
+        "name": "익명1",
+        "content": "Nice to meet you!"
+      }
+    ]
+  }
+]

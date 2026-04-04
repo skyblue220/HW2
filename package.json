@@ -1,0 +1,12 @@
+{
+  "name": "simple-web-service",
+  "version": "1.0.0",
+  "description": "Simple web service for DevOps CI/CD pipeline demo",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.0"
+  }
+}
