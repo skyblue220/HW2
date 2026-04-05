@@ -31,4 +31,4 @@ jobs:
       run: docker rm devops-app
 
     - name: Run new container
-      run: docker run -d --name devops-app -p 3000:3000 ${{ env.DOCKER_USERNAME_LOWER }}/simple-web-service:latest
+      run: docker run -d --name devops-app -p 8080:3000 ${{ secrets.DOCKER_USERNAME }}/simple-web-service:latest
