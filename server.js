@@ -46,9 +46,10 @@ function getNicknameColor(name, customColor) {
 
 app.get('/', (req, res) => {
   const posts = loadPosts();
-  let v = process.env.APP_VERSION || 'v0.1';
+  let v = process.env.APP_VERSION || 'dev';
   if (v.length > 7 && v !== 'dev') v = v.substring(0, 7);
-  const version = v;
+  const gitHash = v;
+  const semanticVersion = 'v1.1';
   const deployTime = process.env.DEPLOY_TIME || 'Unknown Date';
   const title = 'Simple Blog';
 
@@ -57,7 +58,7 @@ app.get('/', (req, res) => {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${title} (Build: ${version})</title>
+  <title>${title} (${semanticVersion} - Build: ${gitHash})</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -163,7 +164,7 @@ app.get('/', (req, res) => {
   <div class="container">
     <h1>${title}</h1>
     <p class="version">
-      <strong>App Version:</strong> ${version} <br>
+      <strong>App Version:</strong> ${semanticVersion} (Build: ${gitHash}) <br>
       <strong>Last Deployed:</strong> ${deployTime}
     </p>
 

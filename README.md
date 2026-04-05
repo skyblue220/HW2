@@ -14,6 +14,19 @@ A minimal Node.js web service using Express for a simple anonymous blog with com
 - Add new posts with a simple form
 - Add comments to existing posts
 
+## Patch Notes (Latest Updates)
+
+### DevOps & CI/CD Pipeline
+- **Automated CI/CD Integration**: Fully integrated with GitHub Actions (`ci.yml`, `deploy.yml`) using a self-hosted runner.
+- **Docker Port Fix**: Mapped host port `8080` to container port `3000` to prevent Windows Hyper-V port collision issues.
+- **Visual Deployment Check**: Dynamic injection of Git Commit Hash (`APP_VERSION`) and Build Timestamp (`DEPLOY_TIME`) at the top of the webpage.
+- **Health Check API**: Added `/health` endpoint to monitor server uptime, app version, and deployment time.
+
+### UI & UX Improvements
+- **Rainbow Anonymous Nicknames**: Automatic assignment of rainbow-colored nicknames (Red, Orange, Yellow, Green, Blue, Indigo, Violet) to anonymous commenters based on sequence digits.
+- **Author Nickname Highlight**: Enforced default black color highlighting for original post authors.
+- **Custom Nickname Color Picker**: Added a color picker (`<input type="color">`) in post & comment forms, allowing users to override default nicknames with their own personalized colors.
+
 ## Prerequisites
 
 - Node.js (v18 or later)
