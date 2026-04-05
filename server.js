@@ -32,6 +32,18 @@ function getAnonymousName(post, ip) {
   return `익명${nextNum}`;
 }
 
+const rainbow = ['#FF0000', '#FF7F00', '#CCCC00', '#00AA00', '#0000FF', '#4B0082', '#9400D3'];
+function getNicknameColor(name, customColor) {
+  if (customColor) return customColor;
+  if (name === '글쓴이') return '#000000'; // Black default
+  const match = name.match(/익명(\d+)/);
+  if (match) {
+    const num = parseInt(match[1], 10);
+    return rainbow[(num - 1) % 7];
+  }
+  return '#333333';
+}
+
 app.get('/', (req, res) => {
   const posts = loadPosts();
   let v = process.env.APP_VERSION || 'v0.1';
@@ -125,7 +137,6 @@ app.get('/', (req, res) => {
     }
     .author {
       font-weight: bold;
-      color: #1877f2;
     }
     .comments h4 {
       margin-bottom: 10px;
@@ -139,7 +150,6 @@ app.get('/', (req, res) => {
       border-left: 3px solid #1877f2;
     }
     .comment strong {
-      color: #1877f2;
     }
     .comment-form {
       margin-top: 15px;
@@ -162,6 +172,10 @@ app.get('/', (req, res) => {
       <form action="/add-post" method="post">
         <input type="text" name="title" placeholder="Title" required>
         <textarea name="content" placeholder="What's on your mind?" required></textarea>
+        <div style="margin-top: 10px; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+          <label><input type="checkbox" name="useColor" value="1"> 닉네임 색 직접 선택</label>
+          <input type="color" name="color" value="#000000">
+        </div>
         <button type="submit">Post</button>
       </form>
     </div>
@@ -171,16 +185,20 @@ app.get('/', (req, res) => {
   posts.forEach(post => {
     html += `<div class="post">
       <h3>${post.title}</h3>
-      <p><span class="author">${post.author}</span>: ${post.content}</p>
+      <p><span class="author" style="color: ${getNicknameColor(post.author, post.color)}">${post.author}</span>: ${post.content}</p>
       <div class="comments">
         <h4>Comments</h4>`;
     post.comments.forEach(comment => {
-      html += `<div class="comment"><strong>${comment.name}</strong>: ${comment.content}</div>`;
+      html += `<div class="comment"><strong style="color: ${getNicknameColor(comment.name, comment.color)}">${comment.name}</strong>: ${comment.content}</div>`;
     });
     html += `<div class="comment-form">
       <form action="/add-comment" method="post">
         <input type="hidden" name="postId" value="${post.id}">
         <textarea name="content" placeholder="Write a comment..." required></textarea>
+        <div style="margin-top: 5px; font-size: 13px; display: flex; align-items: center; gap: 8px;">
+          <label><input type="checkbox" name="useColor" value="1"> 닉네임 색 직접 선택</label>
+          <input type="color" name="color" value="#000000">
+        </div>
         <button type="submit">Comment</button>
       </form>
     </div>
@@ -206,13 +224,14 @@ app.get('/health', (req, res) => {
 });
 
 app.post('/add-post', (req, res) => {
-  const { title, content } = req.body;
+  const { title, content, useColor, color } = req.body;
   if (!title || !content) {
     return res.status(400).send('Title and content are required');
   }
 
   const posts = loadPosts();
-  const newPost = { id: Date.now(), title, content, author: '글쓴이', comments: [] };
+  const finalColor = useColor === '1' ? color : null;
+  const newPost = { id: Date.now(), title, content, author: '글쓴이', color: finalColor, comments: [] };
   posts.push(newPost);
   savePosts(posts);
 
@@ -220,7 +239,7 @@ app.post('/add-post', (req, res) => {
 });
 
 app.post('/add-comment', (req, res) => {
-  const { postId, content } = req.body;
+  const { postId, content, useColor, color } = req.body;
   if (!postId || !content) {
     return res.status(400).send('Post ID and content are required');
   }
@@ -233,7 +252,8 @@ app.post('/add-comment', (req, res) => {
 
   const ip = req.ip || req.connection.remoteAddress;
   const name = getAnonymousName(post, ip);
-  post.comments.push({ ip, name, content });
+  const finalColor = useColor === '1' ? color : null;
+  post.comments.push({ ip, name, content, color: finalColor });
   savePosts(posts);
 
   res.redirect('/');
