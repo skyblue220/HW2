@@ -12,6 +12,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
     - name: Login to Docker Hub
       uses: docker/login-action@v3
       with:
@@ -22,12 +25,18 @@ jobs:
       id: time
       run: echo "time=$(date +'%Y-%m-%d %H:%M:%S KST' -d '+9 hours')" >> $GITHUB_ENV
 
+    - name: Set lowercase Docker Username
+      run: |
+        echo "DOCKER_USERNAME_LOWER=${DOCKER_USERNAME,,}" >> $GITHUB_ENV
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
         context: .
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/simple-web-service:latest
+        tags: ${{ env.DOCKER_USERNAME_LOWER }}/simple-web-service:latest
         build-args: |
           APP_VERSION=${{ github.sha }}
           DEPLOY_TIME=${{ env.time }}
